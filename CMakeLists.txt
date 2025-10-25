@@ -1,5 +1,5 @@
+cmake_minimum_required (VERSION 3.5)
 project (tortellini)
-cmake_minimum_required (VERSION 3.2)
 
 add_library (tortellini INTERFACE)
 target_include_directories (tortellini INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
