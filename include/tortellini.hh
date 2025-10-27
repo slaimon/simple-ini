@@ -336,6 +336,23 @@ private:
 		rtrim(s);
 	}
 
+	static inline void strip_comments(std::string &s) {
+		bool escaped = false;
+		for (size_t i = 0; i < s.size(); ++i) {
+			char c = s[i];
+			if (c == '\\' && !escaped) {
+				escaped = !escaped;
+				s.erase(i,1); // erase the escape character '\'
+				--i;
+			} else if (escaped) {
+				escaped = !escaped;
+			} else if (c == '#') {
+				s.erase(i);
+				return;
+			}
+		}
+	}
+
 public:
 	class iterator {
 		friend class ini;
@@ -402,6 +419,7 @@ public:
 				}
 			}
 
+			strip_comments(line);
 			trim(line);
 
 			if (line.empty()) continue;

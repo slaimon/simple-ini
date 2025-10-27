@@ -519,3 +519,27 @@ TEST_CASE("Iterating an INI") {
 		}
 	}
 }
+
+TEST_CASE("Parsing an INI with comments") {
+	tortellini::ini ini;
+
+	SECTION("Can read a value with a comment next to it") {
+		test_read<bool>("true#comment", true);
+		test_read<bool>("true #comment", true);
+		test_read<bool>("false # another comment", false);
+		test_read<bool>("false # one more comment\n# on multiple lines", false);
+	}
+
+	SECTION("Can read values with an escaped # character inside") {
+		test_read<std::string>("user\\#name", "user#name");
+		test_read<std::string>("\\# fake comment # real comment", "# fake comment");
+		test_read<std::string>("\\# fake comment # real comment", "# fake comment");
+		test_read<std::string>("\\#\\#\\####", "###");
+	}
+
+	SECTION("Comment is treated as invalid value") {
+		std::istringstream("v = #hello") >> ini;
+		const auto v = ini[""]["v"] | 42.0;
+		CHECK(v == 42.0);
+	}
+}
